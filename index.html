@@ -9,23 +9,61 @@
 
   <body>
 
-    <div id="app">
+    <div id="fpApp">
+      <div id="pnlFinancialProjection">
+        <div class="header">
+          <div class="monthName"></div>
+          <div class="in"></div>
+          <div class="out"></div>
+          <div class="remaining"></div>
+          <div class="cumulative"></div>          
+        </div>
+        <div class="row">
+          <div class="monthName"></div>
+          <div class="in"></div>
+          <div class="out"></div>
+          <div class="remaining"></div>
+          <div class="cumulative"></div>
+        </div>
+        <div class="footer">
+          <div class="monthName">Total</div>
+          <div class="in"></div>
+          <div class="out"></div>
+          <div class="remaining"></div>
+          <div class="cumulative"></div>
+        </div>
+      </div>
 
+      <div id="pnlItem">
+        
+      </div>
     </div>
 
     <script src="https://jsdelivr.net"></script>
 
     <script>
       new Vue({
-        el: '#app',
+        el: '#fpApp',
         data: {
-
+          items:[],
+          itemsByMonth:[],
+          itemTemplate: {
+            month:0,
+            name: "",
+            amount: 0
+          },
         },
         methods: {
           addItem: function() {
 \
           },
           removeItem: function(index) {
+
+          },
+          showItem: function(index) {
+
+          },
+          orderItemsByMonth: function() {
 
           }
         }
