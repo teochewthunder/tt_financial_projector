@@ -35,7 +35,23 @@
       </div>
 
       <div id="pnlItem">
-        
+        <label>
+          Month:
+          <select id="itemMonth">
+            <option value="1">Jan</option>
+          </select>
+        </label>
+        <label>
+          <input id="itemName" value="">
+        </label>
+        <label>
+          <input id="itemTypeIn" type="radio" value="1" selected>
+          <input id="itemTypeOut" type="radio" value="1">
+        </label>
+        <label>
+          <input id="itemAmount" type="number" value="">
+        </label>
+        <button>ADD</button>
       </div>
     </div>
 
@@ -45,6 +61,7 @@
       new Vue({
         el: '#fpApp',
         data: {
+          currentIndex: 0,
           items:[],
           itemsByMonth:[],
           itemTemplate: {
