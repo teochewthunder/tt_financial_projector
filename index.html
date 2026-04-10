@@ -46,15 +46,17 @@
         <label>
           Name
           <input ref="itemName" v-bind:value="items[currentIndex].name">
+          <br /> {{ errors.name }}
         </label>
         <label>
-          Type
-          <input ref="itemTypeIn" name="type" type="radio" v-bind:checked="items[currentIndex].amount > 0">
-          <input ref="itemTypeOut" name="type" type="radio" v-bind:checked="items[currentIndex].amount < 0">
+          Type<br />
+          <input ref="itemTypeIn" name="type" type="radio" v-bind:checked="items[currentIndex].amount > 0">In
+          <input ref="itemTypeOut" name="type" type="radio" v-bind:checked="items[currentIndex].amount < 0">Out
         </label>
         <label>
           Amount
           <input ref="itemAmount" type="number" v-bind:value="Math.abs(items[currentIndex].amount)">
+          <br /> {{ errors.amount }}
         </label>
         <input type="button" v-bind:value="currentIndex == 0 ? 'ADD' : 'UPDATE'" @click="addItem" />
       </div>
@@ -67,6 +69,10 @@
         el: '#fpApp',
         data: {
           currentIndex: 0,
+          errors: {
+            name: "",
+            amount: "",
+          },
           items:[
             {
               name: "",
@@ -80,10 +86,20 @@
         },
         methods: {
           addItem: function() {
-            let nameValue = this.$refs.itemName.value;
-            let amountValue = parseFloat(this.$refs.itemAmount.value);
-            if (this.$refs.itemTypeOut.checked) amountValue = amountValue * -1;
+            this.errors.name = "";
+            this.errors.amount = "";
+
+            let nameValue = this.$refs.itemName.value.trim();
+            let amountValue = parseFloat(this.$refs.itemAmount.value).trim();
             let monthValue = parseInt(this.$refs.itemMonth.value);
+            let errors = 0;
+
+            //validations
+            if (nameValue == "") { this.errors.name = "Required"; errors++; }
+            if (amountValue <= 0) { this.errors.amount = "Must be positive"; errors++; }
+            if (errors > 0) return;
+
+            if (this.$refs.itemTypeOut.checked) amountValue = amountValue * -1;
 
             this.items.push({
               name: nameValue,
