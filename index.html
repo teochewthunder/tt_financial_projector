@@ -3,14 +3,49 @@
   <head>
     <title>Financial Projector</title>
     <style>
+      body
+      {
+        font-family: Arial;
+        font-size: 14px;
+      }
 
+      #pnlFinancialProjection
+      {
+        width: 40%;
+      }
+
+      #pnlItem
+      {
+        width: 20%;
+      }
+
+      .panel
+      {
+        float: left;
+        padding: 1em;
+        border-radius: 20px;
+        outline: 1px solid rgba(255, 150, 0, 0.5);
+        margin-right: 1em;
+      }
+
+      label
+      {
+        width: 5em;
+        float: left;
+        margin-bottom: 1em;
+      }
+
+      .hidden
+      {
+        display: none;
+      }
     </style>
   </head>
 
   <body>
 
     <div id="fpApp">
-      <div id="pnlFinancialProjection">
+      <div id="pnlFinancialProjection" class="panel">
         <div class="header">
           <div class="monthName"></div>
           <div class="in"></div>
@@ -34,30 +69,31 @@
         </div>
       </div>
 
-      <div id="pnlItem">
-        <label>
-          Month:
+      <div id="pnlItem" class="panel">
+        <p>
+          <label>Month:</label>
           <select ref="itemMonth" v-model="items[currentIndex].month">
             <option v-for="(month, index) in months" v-bind:key="index" v-bind:value="index">
               {{ month }}
             </option>
           </select>
-        </label>
-        <label>
-          Name
+        </p>
+        <p>
+          <label>Name</label>
           <input ref="itemName" v-bind:value="items[currentIndex].name">
           <br /> {{ errors.name }}
-        </label>
-        <label>
-          Type<br />
-          <input ref="itemTypeIn" name="type" type="radio" v-bind:checked="items[currentIndex].amount > 0">In
+        </p>
+        <p>
+          <label>Type</label>
+          <input ref="itemTypeIn" name="type" type="radio" v-bind:checked="items[currentIndex].amount >= 0">In
           <input ref="itemTypeOut" name="type" type="radio" v-bind:checked="items[currentIndex].amount < 0">Out
-        </label>
-        <label>
-          Amount
+        </p>
+        <p>
+          <label>Amount</label>
           <input ref="itemAmount" type="number" v-bind:value="Math.abs(items[currentIndex].amount)">
           <br /> {{ errors.amount }}
-        </label>
+        </p>
+        <input type="button" value="NEW" @click="setCurrentIndex(0)" v-bind:class="currentIndex == 0 ? 'hidden' : ''" />
         <input type="button" v-bind:value="currentIndex == 0 ? 'ADD' : 'UPDATE'" @click="addItem" />
       </div>
     </div>
@@ -77,7 +113,7 @@
             {
               name: "",
               month: 0,
-              amount: 100
+              amount: ""
             }
           ],
           months: [
@@ -90,13 +126,13 @@
             this.errors.amount = "";
 
             let nameValue = this.$refs.itemName.value.trim();
-            let amountValue = parseFloat(this.$refs.itemAmount.value).trim();
+            let amountValue = parseFloat(this.$refs.itemAmount.value.trim());
             let monthValue = parseInt(this.$refs.itemMonth.value);
             let errors = 0;
 
             //validations
             if (nameValue == "") { this.errors.name = "Required"; errors++; }
-            if (amountValue <= 0) { this.errors.amount = "Must be positive"; errors++; }
+            if (amountValue <= 0 || isNaN(amountValue)) { this.errors.amount = "Must be positive"; errors++; }
             if (errors > 0) return;
 
             if (this.$refs.itemTypeOut.checked) amountValue = amountValue * -1;
@@ -115,8 +151,8 @@
           showItem: function(index) {
 
           },
-          orderItemsByMonth: function() {
-
+          setCurrentIndex: function(val) {
+            this.currentIndex = val;
           }
         }
       });
