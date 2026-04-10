@@ -37,42 +37,61 @@
       <div id="pnlItem">
         <label>
           Month:
-          <select id="itemMonth">
-            <option value="1">Jan</option>
+          <select ref="itemMonth" v-model="items[currentIndex].month">
+            <option v-for="(month, index) in months" v-bind:key="index" v-bind:value="index">
+              {{ month }}
+            </option>
           </select>
         </label>
         <label>
-          <input id="itemName" value="">
+          Name
+          <input ref="itemName" v-bind:value="items[currentIndex].name">
         </label>
         <label>
-          <input id="itemTypeIn" type="radio" value="1" selected>
-          <input id="itemTypeOut" type="radio" value="1">
+          Type
+          <input ref="itemTypeIn" name="type" type="radio" v-bind:checked="items[currentIndex].amount > 0">
+          <input ref="itemTypeOut" name="type" type="radio" v-bind:checked="items[currentIndex].amount < 0">
         </label>
         <label>
-          <input id="itemAmount" type="number" value="">
+          Amount
+          <input ref="itemAmount" type="number" v-bind:value="Math.abs(items[currentIndex].amount)">
         </label>
-        <button>ADD</button>
+        <input type="button" v-bind:value="currentIndex == 0 ? 'ADD' : 'UPDATE'" @click="addItem" />
       </div>
     </div>
 
-    <script src="https://jsdelivr.net"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.7.16/dist/vue.js"></script>
 
     <script>
       new Vue({
         el: '#fpApp',
         data: {
           currentIndex: 0,
-          items:[],
-          itemsByMonth:[],
-          itemTemplate: {
-            month:0,
-            name: "",
-            amount: 0
-          },
+          items:[
+            {
+              name: "",
+              month: 0,
+              amount: 100
+            }
+          ],
+          months: [
+            "All", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+          ]
         },
         methods: {
           addItem: function() {
-\
+            let nameValue = this.$refs.itemName.value;
+            let amountValue = parseFloat(this.$refs.itemAmount.value);
+            if (this.$refs.itemTypeOut.checked) amountValue = amountValue * -1;
+            let monthValue = parseInt(this.$refs.itemMonth.value);
+
+            this.items.push({
+              name: nameValue,
+              month: monthValue,
+              amount: amountValue
+            });
+
+            console.log(this.items);
           },
           removeItem: function(index) {
 
