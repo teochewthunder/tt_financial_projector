@@ -9,30 +9,50 @@
         font-size: 14px;
       }
 
+      #fpApp
+      {
+        width: 800px;
+        margin: 0 auto 0 auto;
+      }
+
       #pnlFinancialProjection
       {
-        width: 40%;
+        width: 500px;
+        height: 200px;
       }
 
       #pnlFinancialProjection .row div
       {
-        width: 6em;
+        width: 10em;
         float: left;
         text-align: right;
       }
 
       #pnlItem
       {
-        width: 20%;
+        width: 240px;
+        height: 200px;
+      }
+
+      #pnlItems
+      {
+        width: 770px;
+        height: 500px;
       }
 
       .panel
       {
         float: left;
-        padding: 1em;
+        padding: 10px;
         border-radius: 20px;
         outline: 1px solid rgba(255, 150, 0, 0.5);
-        margin-right: 1em;
+        margin-right: 10px;
+        margin-bottom: 10px;
+      }
+
+      .header
+      {
+        font-weight: bold;
       }
 
       label
@@ -53,12 +73,13 @@
 
     <div id="fpApp">
       <div id="pnlFinancialProjection" class="panel">
-        <div class="header">
-          <div class="monthName"></div>
-          <div class="in"></div>
-          <div class="out"></div>
-          <div class="remaining"></div>
-          <div class="cumulative"></div>          
+        <div class="header row">
+          <div>MONTH</div>
+          <div>IN</div>
+          <div>OUT</div>
+          <div>REMAINING</div>
+          <div>CUMULATIVE</div> 
+          <br />         
         </div>
 
         <div class="row" v-for="(monthItem, monthItemIndex) in monthItems" v-bind:key="monthItemIndex" v-bind:class="monthItemIndex == 0 ? 'hidden' : ''">
@@ -75,6 +96,7 @@
           </div>
           <div class="remaining">{{ monthItem.itemsInTotal + monthItem.itemsOutTotal }}</div>
           <div class="cumulative">{{ monthItem.cumulative }}</div>
+          <br />
         </div>
 
         <div class="footer">
@@ -111,10 +133,13 @@
           <br /> {{ errors.amount }}
         </p>
         <input type="button" value="NEW" @click="setCurrentIndex(0)" v-bind:class="currentIndex == 0 ? 'hidden' : ''" />
-        <input type="button" v-bind:value="currentIndex == 0 ? 'ADD' : 'UPDATE'" @click="addItem" />
+        <input type="button" v-bind:value="currentIndex == 0 ? 'ADD' : 'UPDATE'" @click="addUpdateItem" />
+      </div>
+      
+      <div id="pnlItems" class="panel">
+
       </div>
     </div>
-
     <script src="https://cdn.jsdelivr.net/npm/vue@2.7.16/dist/vue.js"></script>
 
     <script>
@@ -153,7 +178,7 @@
           ]
         },
         methods: {
-          addItem: function() {
+          addUpdateItem: function(index) {
             this.errors.name = "";
             this.errors.amount = "";
 
@@ -169,33 +194,56 @@
 
             if (this.$refs.itemTypeOut.checked) amountValue = amountValue * -1;
 
-            this.items.push({
-              name: nameValue,
-              month: monthValue,
-              amount: amountValue
-            });
+            if (index == 0) {
+              this.items.push({
+                name: nameValue,
+                month: monthValue,
+                amount: amountValue
+              });              
+            } else {
+              this.items[i].name = nameValue;
+              this.items[i].amount = amountValue;
+              this.items[i].month = monthValue;
+            }
 
-            this.sortItemOrder(monthValue);
+            this.setCurrentIndex(0);
+            this.sortItemOrder();
           },
           removeItem: function(index) {
-
-          },
-          updateItem: function(index) {
-
+            this.items.splice(index, 1);
+            this.setCurrentIndex(0);
           },
           setCurrentIndex: function(val) {
             this.currentIndex = val;
           },
-          sortItemOrder: function(month) {
+          sortItemOrder: function() {
+            let tempMonthItems = [
+              { monthName: "", itemsIn:[], itemsInTotal:"", itemsOut:"", itemsOutTotal:"", cumulative: "" },
+              { monthName: "Jan", itemsIn:[], itemsInTotal:0, itemsOut:[], itemsOutTotal:0, cumulative: 0 },
+              { monthName: "Feb", itemsIn:[], itemsInTotal:0, itemsOut:[], itemsOutTotal:0, cumulative: 0 },
+              { monthName: "Mar", itemsIn:[], itemsInTotal:0, itemsOut:[], itemsOutTotal:0, cumulative: 0 },
+              { monthName: "Apr", itemsIn:[], itemsInTotal:0, itemsOut:[], itemsOutTotal:0, cumulative: 0 },
+              { monthName: "May", itemsIn:[], itemsInTotal:0, itemsOut:[], itemsOutTotal:0, cumulative: 0 },
+              { monthName: "Jun", itemsIn:[], itemsInTotal:0, itemsOut:[], itemsOutTotal:0, cumulative: 0 },
+              { monthName: "Jul", itemsIn:[], itemsInTotal:0, itemsOut:[], itemsOutTotal:0, cumulative: 0 },
+              { monthName: "Aug", itemsIn:[], itemsInTotal:0, itemsOut:[], itemsOutTotal:0, cumulative: 0 },
+              { monthName: "Sep", itemsIn:[], itemsInTotal:0, itemsOut:[], itemsOutTotal:0, cumulative: 0 },
+              { monthName: "Oct", itemsIn:[], itemsInTotal:0, itemsOut:[], itemsOutTotal:0, cumulative: 0 },
+              { monthName: "Nov", itemsIn:[], itemsInTotal:0, itemsOut:[], itemsOutTotal:0, cumulative: 0 },
+              { monthName: "Dec", itemsIn:[], itemsInTotal:0, itemsOut:[], itemsOutTotal:0, cumulative: 0 }
+            ];
+
             for (let i = 1; i <= 12; i++) {
-              this.monthItems[i].itemsIn = this.items.filter((item) => {return item.amount > 0 && [0, i].indexOf(item.month) != -1});
-              this.monthItems[i].itemsOut = this.items.filter((item) => {return item.amount < 0 && [0, i].indexOf(item.month) != -1});
+              tempMonthItems[i].itemsIn = this.items.filter((item) => {return item.amount > 0 && [0, i].indexOf(item.month) != -1});
+              tempMonthItems[i].itemsOut = this.items.filter((item) => {return item.amount < 0 && [0, i].indexOf(item.month) != -1});
 
-              this.monthItems[i].itemsInTotal = this.monthItems[i].itemsIn.reduce((sum, item) => sum + item.amount, 0);
-              this.monthItems[i].itemsOutTotal = this.monthItems[i].itemsOut.reduce((sum, item) => sum + item.amount, 0);
+              tempMonthItems[i].itemsInTotal = tempMonthItems[i].itemsIn.reduce((sum, item) => sum + item.amount, 0);
+              tempMonthItems[i].itemsOutTotal = tempMonthItems[i].itemsOut.reduce((sum, item) => sum + item.amount, 0);
 
-              this.monthItems[i].cumulative = (i > 1 ? this.monthItems[i].itemsInTotal + this.monthItems[i].itemsOutTotal + this.monthItems[i - 1].cumulative : 0);
+              tempMonthItems[i].cumulative = (i > 1 ? tempMonthItems[i].itemsInTotal + tempMonthItems[i].itemsOutTotal + tempMonthItems[i - 1].cumulative : 0);
             }
+
+            this.monthItems = tempMonthItems;
 
             console.log(this.monthItems);
           }
