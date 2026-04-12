@@ -73,39 +73,23 @@
 
     <div id="fpApp">
       <div id="pnlFinancialProjection" class="panel">
-        <div class="header row">
-          <div>MONTH</div>
-          <div>IN</div>
-          <div>OUT</div>
-          <div>REMAINING</div>
-          <div>CUMULATIVE</div> 
-          <br />         
-        </div>
+        <table>
+          <tr class="header">
+            <td>MONTH</td>
+            <td>IN</td>
+            <td>OUT</td>
+            <td>REMAINING</td>
+            <td>CUMULATIVE</td> 
+          </tr>
 
-        <div class="row" v-for="(monthItem, monthItemIndex) in monthItems" v-bind:key="monthItemIndex" v-bind:class="monthItemIndex == 0 ? 'hidden' : ''">
-          <div class="monthName">{{ monthItem.monthName }}</div>
-          <div class="in">
-            {{ monthItem.itemsInTotal }}
-            <div v-for="(itemIn, itemInIndex) in monthItem.itemsIn" v-bind:key="itemInIndex">
-            </div>
-          </div>
-          <div class="out">
-            {{ monthItem.itemsOutTotal }}
-            <div v-for="(itemOut, itemOutIndex) in monthItem.itemsOut" v-bind:key="itemOutIndex">
-            </div>
-          </div>
-          <div class="remaining">{{ monthItem.itemsInTotal + monthItem.itemsOutTotal }}</div>
-          <div class="cumulative">{{ monthItem.cumulative }}</div>
-          <br />
-        </div>
-
-        <div class="footer">
-          <div class="monthName">Total</div>
-          <div class="in"></div>
-          <div class="out"></div>
-          <div class="remaining"></div>
-          <div class="cumulative"></div>
-        </div>
+          <tr v-for="(monthItem, monthItemIndex) in monthItems" v-bind:key="monthItemIndex" v-bind:class="monthItemIndex == 0 ? 'hidden' : ''">
+            <td class="monthName">{{ monthItem.monthName }}</td>
+            <td class="in">{{ monthItem.itemsInTotal }}</td>
+            <td class="out">{{ monthItem.itemsOutTotal }}</td>
+            <td class="remaining">{{ monthItem.itemsInTotal + monthItem.itemsOutTotal }}</td>
+            <td class="cumulative">{{ monthItem.cumulative }}</td>
+          </tr>
+        </table>
       </div>
 
       <div id="pnlItem" class="panel">
@@ -137,7 +121,32 @@
       </div>
       
       <div id="pnlItems" class="panel">
+        <table>
+          <tr class="header">
+            <td>NAME</td>
+            <td>AMOUNT</td>
+            <td></td>
+            <td></td>
+          </tr>
 
+          <template v-for="(monthName, monthIndex) in months">
+            <tr v-for="(item, itemIndex) in filterItems(monthIndex, true)" v-bind:key="itemIndex+'m'+monthIndex">
+              <td>{{monthName}}</td>
+              <td>{{ item.name }}</td>
+              <td>{{ item.amount }}</td>
+              <td>UPDATE</td>
+              <td>DELETE</td>
+            </tr>
+            <tr v-for="(item, itemIndex) in filterItems(monthIndex, false)" v-bind:key="itemIndex+'m'+monthIndex">
+              <td>{{monthName}}</td>
+              <td>{{ item.name }}</td>
+              <td>{{ item.amount }}</td>
+              <td>UPDATE</td>
+              <td>DELETE</td>
+            </tr>
+          </template>
+        </table>
+      </div>
       </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/vue@2.7.16/dist/vue.js"></script>
@@ -158,7 +167,8 @@
               amount: 0
             }
           ],
-          monthItems: [
+          monthItems: [],
+          monthItemsTemplate: [
             { monthName: "", itemsIn:[], itemsInTotal:"", itemsOut:"", itemsOutTotal:"", cumulative: "" },
             { monthName: "Jan", itemsIn:[], itemsInTotal:0, itemsOut:[], itemsOutTotal:0, cumulative: 0 },
             { monthName: "Feb", itemsIn:[], itemsInTotal:0, itemsOut:[], itemsOutTotal:0, cumulative: 0 },
@@ -178,7 +188,7 @@
           ]
         },
         methods: {
-          addUpdateItem: function(index) {
+          addUpdateItem: function() {
             this.errors.name = "";
             this.errors.amount = "";
 
@@ -194,16 +204,16 @@
 
             if (this.$refs.itemTypeOut.checked) amountValue = amountValue * -1;
 
-            if (index == 0) {
+            if (this.currentIndex == 0) {
               this.items.push({
                 name: nameValue,
                 month: monthValue,
                 amount: amountValue
               });              
             } else {
-              this.items[i].name = nameValue;
-              this.items[i].amount = amountValue;
-              this.items[i].month = monthValue;
+              this.items[this.currentIndex].name = nameValue;
+              this.items[this.currentIndex].amount = amountValue;
+              this.items[this.currentIndex].month = monthValue;
             }
 
             this.setCurrentIndex(0);
@@ -217,21 +227,7 @@
             this.currentIndex = val;
           },
           sortItemOrder: function() {
-            let tempMonthItems = [
-              { monthName: "", itemsIn:[], itemsInTotal:"", itemsOut:"", itemsOutTotal:"", cumulative: "" },
-              { monthName: "Jan", itemsIn:[], itemsInTotal:0, itemsOut:[], itemsOutTotal:0, cumulative: 0 },
-              { monthName: "Feb", itemsIn:[], itemsInTotal:0, itemsOut:[], itemsOutTotal:0, cumulative: 0 },
-              { monthName: "Mar", itemsIn:[], itemsInTotal:0, itemsOut:[], itemsOutTotal:0, cumulative: 0 },
-              { monthName: "Apr", itemsIn:[], itemsInTotal:0, itemsOut:[], itemsOutTotal:0, cumulative: 0 },
-              { monthName: "May", itemsIn:[], itemsInTotal:0, itemsOut:[], itemsOutTotal:0, cumulative: 0 },
-              { monthName: "Jun", itemsIn:[], itemsInTotal:0, itemsOut:[], itemsOutTotal:0, cumulative: 0 },
-              { monthName: "Jul", itemsIn:[], itemsInTotal:0, itemsOut:[], itemsOutTotal:0, cumulative: 0 },
-              { monthName: "Aug", itemsIn:[], itemsInTotal:0, itemsOut:[], itemsOutTotal:0, cumulative: 0 },
-              { monthName: "Sep", itemsIn:[], itemsInTotal:0, itemsOut:[], itemsOutTotal:0, cumulative: 0 },
-              { monthName: "Oct", itemsIn:[], itemsInTotal:0, itemsOut:[], itemsOutTotal:0, cumulative: 0 },
-              { monthName: "Nov", itemsIn:[], itemsInTotal:0, itemsOut:[], itemsOutTotal:0, cumulative: 0 },
-              { monthName: "Dec", itemsIn:[], itemsInTotal:0, itemsOut:[], itemsOutTotal:0, cumulative: 0 }
-            ];
+            let tempMonthItems = structuredClone(this.monthItemsTemplate);
 
             for (let i = 1; i <= 12; i++) {
               tempMonthItems[i].itemsIn = this.items.filter((item) => {return item.amount > 0 && [0, i].indexOf(item.month) != -1});
@@ -243,9 +239,16 @@
               tempMonthItems[i].cumulative = (i > 1 ? tempMonthItems[i].itemsInTotal + tempMonthItems[i].itemsOutTotal + tempMonthItems[i - 1].cumulative : 0);
             }
 
-            this.monthItems = tempMonthItems;
+            this.monthItems = structuredClone(tempMonthItems);
 
             console.log(this.monthItems);
+          },
+          filterItems: function(month, isIn) {
+            if (isIn) {
+              return this.items.filter((item) => { return item.month == month && item.amount > 0; });
+            }
+
+            return this.items.filter((item) => { return item.month == month && item.amount < 0; });
           }
         }
       });
