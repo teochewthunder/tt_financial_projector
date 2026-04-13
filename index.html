@@ -18,20 +18,13 @@
       #pnlFinancialProjection
       {
         width: 500px;
-        height: 200px;
-      }
-
-      #pnlFinancialProjection .row div
-      {
-        width: 10em;
-        float: left;
-        text-align: right;
+        height: 300px;
       }
 
       #pnlItem
       {
         width: 240px;
-        height: 200px;
+        height: 300px;
       }
 
       #pnlItems
@@ -50,6 +43,11 @@
         margin-bottom: 10px;
       }
 
+      .numeric
+      {
+        text-align: right;
+      }
+
       .header
       {
         font-weight: bold;
@@ -60,6 +58,16 @@
         width: 5em;
         float: left;
         margin-bottom: 1em;
+      }
+
+      .inText
+      {
+        color: rgb(0, 255, 0);
+      }
+
+      .outText
+      {
+        color: rgb(255, 0, 0);
       }
 
       .hidden
@@ -75,19 +83,19 @@
       <div id="pnlFinancialProjection" class="panel">
         <table>
           <tr class="header">
-            <td>MONTH</td>
-            <td>IN</td>
-            <td>OUT</td>
-            <td>REMAINING</td>
-            <td>CUMULATIVE</td> 
+            <td width="20%">MONTH</td>
+            <td width="20%" class="numeric">IN</td>
+            <td width="20%" class="numeric">OUT</td>
+            <td width="20%" class="numeric">REMAINING</td>
+            <td width="20%" class="numeric">CUMULATIVE</td> 
           </tr>
 
           <tr v-for="(monthItem, monthItemIndex) in monthItems" v-bind:key="monthItemIndex" v-bind:class="monthItemIndex == 0 ? 'hidden' : ''">
-            <td class="monthName">{{ monthItem.monthName }}</td>
-            <td class="in">{{ monthItem.itemsInTotal }}</td>
-            <td class="out">{{ monthItem.itemsOutTotal }}</td>
-            <td class="remaining">{{ monthItem.itemsInTotal + monthItem.itemsOutTotal }}</td>
-            <td class="cumulative">{{ monthItem.cumulative }}</td>
+            <td>{{ monthItem.monthName }}</td>
+            <td class="numeric inText">{{ monthItem.itemsInTotal }}</td>
+            <td class="numeric outText">{{ monthItem.itemsOutTotal }}</td>
+            <td v-bind:class=" monthItem.itemsInTotal + monthItem.itemsOutTotal > 0 ? 'numeric inText' : 'numeric outText'">{{ monthItem.itemsInTotal + monthItem.itemsOutTotal }}</td>
+            <td v-bind:class=" monthItem.cumulative > 0 ? 'numeric inText' : 'numeric outText'">{{ monthItem.cumulative }}</td>
           </tr>
         </table>
       </div>
@@ -123,24 +131,25 @@
       <div id="pnlItems" class="panel">
         <table>
           <tr class="header">
-            <td>NAME</td>
-            <td>AMOUNT</td>
-            <td></td>
-            <td></td>
+            <td width="20%"></td>
+            <td width="40%">NAME</td>
+            <td width="20%" class="numeric">AMOUNT</td>
+            <td width="10%"></td>
+            <td width="10%"></td>
           </tr>
 
           <template v-for="(monthName, monthIndex) in months">
             <tr v-for="(item, itemIndex) in filterItems(monthIndex, true)" v-bind:key="itemIndex+'m'+monthIndex">
               <td>{{monthName}}</td>
               <td>{{ item.name }}</td>
-              <td>{{ item.amount }}</td>
+              <td class="numeric inText">{{ item.amount }}</td>
               <td>UPDATE</td>
               <td>DELETE</td>
             </tr>
             <tr v-for="(item, itemIndex) in filterItems(monthIndex, false)" v-bind:key="itemIndex+'m'+monthIndex">
               <td>{{monthName}}</td>
               <td>{{ item.name }}</td>
-              <td>{{ item.amount }}</td>
+              <td class="numeric outText">{{ item.amount }}</td>
               <td>UPDATE</td>
               <td>DELETE</td>
             </tr>
