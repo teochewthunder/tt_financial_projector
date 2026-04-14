@@ -30,7 +30,6 @@
       #pnlItems
       {
         width: 770px;
-        height: 500px;
       }
 
       .panel
@@ -56,8 +55,8 @@
       label
       {
         width: 5em;
+        font-size: 0.5em;
         float: left;
-        margin-bottom: 1em;
       }
 
       .inText
@@ -68,6 +67,28 @@
       .outText
       {
         color: rgb(255, 0, 0);
+      }
+
+      input, select
+      {
+        width: 10em;
+        padding: 0em;
+      }
+
+      input[type=button]
+      {
+        width: 5em;
+        height: 1.5em;
+        float: right;
+        border-radius: 5px;
+        background-color: rgba(255, 150, 0, 0.5);
+        color: rgb(255, 255, 255);
+        border: 0px solid rgb(0, 0, 0);
+      }
+
+      input[type=button]:hover
+      {
+        background-color: rgba(255, 150, 0, 1);
       }
 
       .hidden
@@ -102,26 +123,30 @@
 
       <div id="pnlItem" class="panel">
         <p>
-          <label>Month:</label>
-          <select ref="itemMonth" v-model="items[currentIndex].month">
+          <label for="itemMonth">Month</label>
+          <br />
+          <select ref="itemMonth" id="itemMOnth" v-model="items[currentIndex].month">
             <option v-for="(month, index) in months" v-bind:key="index" v-bind:value="index">
               {{ month }}
             </option>
           </select>
         </p>
         <p>
-          <label>Name</label>
-          <input ref="itemName" v-bind:value="items[currentIndex].name">
+          <label for="itemName">Name</label>
+          <br />
+          <input ref="itemName" id="itemName" v-bind:value="items[currentIndex].name">
           <br /> {{ errors.name }}
         </p>
         <p>
-          <label>Type</label>
-          <input ref="itemTypeIn" name="type" type="radio" v-bind:checked="items[currentIndex].amount >= 0">In
-          <input ref="itemTypeOut" name="type" type="radio" v-bind:checked="items[currentIndex].amount < 0">Out
+          <label for="itemTypeIn">Type</label>
+          <br />
+          <input ref="itemTypeIn" id="itemTypeIn" name="type" type="radio" v-bind:checked="items[currentIndex].amount >= 0">In
+          <input ref="itemTypeOut" id="itemTypeOut" name="type" type="radio" v-bind:checked="items[currentIndex].amount < 0">Out
         </p>
         <p>
-          <label>Amount</label>
-          <input ref="itemAmount" type="number" v-bind:value="Math.abs(items[currentIndex].amount)">
+          <label for="itemAmount">Amount</label>
+          <br />
+          <input ref="itemAmount" id="itemAmount" type="number" v-bind:value="Math.abs(items[currentIndex].amount)">
           <br /> {{ errors.amount }}
         </p>
         <input type="button" value="NEW" @click="setCurrentIndex(0)" v-bind:class="currentIndex == 0 ? 'hidden' : ''" />
