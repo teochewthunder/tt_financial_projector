@@ -69,7 +69,7 @@
         color: rgb(255, 0, 0);
       }
 
-      input, select
+      input[type=text], input[type=number], select
       {
         width: 10em;
         padding: 0em;
@@ -134,7 +134,7 @@
         <p>
           <label for="itemName">Name</label>
           <br />
-          <input ref="itemName" id="itemName" v-bind:value="items[currentIndex].name">
+          <input ref="itemName" id="itemName" type="text" v-bind:value="items[currentIndex].name">
           <br /> {{ errors.name }}
         </p>
         <p>
@@ -163,22 +163,15 @@
             <td width="10%"></td>
           </tr>
 
-          <template v-for="(monthName, monthIndex) in months">
-            <tr v-for="(item, itemIndex) in filterItems(monthIndex, true)" v-bind:key="itemIndex+'m'+monthIndex">
-              <td>{{monthName}}</td>
-              <td>{{ item.name }}</td>
-              <td class="numeric inText">{{ item.amount }}</td>
-              <td>UPDATE</td>
-              <td>DELETE</td>
-            </tr>
-            <tr v-for="(item, itemIndex) in filterItems(monthIndex, false)" v-bind:key="itemIndex+'m'+monthIndex">
-              <td>{{monthName}}</td>
-              <td>{{ item.name }}</td>
-              <td class="numeric outText">{{ item.amount }}</td>
-              <td>UPDATE</td>
-              <td>DELETE</td>
-            </tr>
-          </template>
+          <tr v-for="si in sortedItems" 
+              v-bind:key="si.index" 
+              v-if="si.index > 0">
+            <td>{{ months[si.item.month] }}</td>
+            <td>{{ si.item.name }}</td>
+            <td v-bind:class=" si.item.amount > 0 ? 'numeric inText' : 'numeric outText'">{{ si.item.amount }}</td>
+            <td @click="setCurrentIndex(entry.index)">UPDATE</td>
+            <td @click="removeItem(entry.index)">DELETE</td>
+          </tr>
         </table>
       </div>
       </div>
@@ -220,6 +213,13 @@
           months: [
             "All", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
           ]
+        },
+        computed: {
+          sortedItems: function() {
+              return this.items
+              .map((item, index) => ({ item, index }))
+              .sort((a, b) => a.item.month - b.item.month);
+          }
         },
         methods: {
           addUpdateItem: function() {
