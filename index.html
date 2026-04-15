@@ -61,12 +61,12 @@
 
       .inText
       {
-        color: rgb(0, 255, 0);
+        color: rgb(0, 200, 0);
       }
 
       .outText
       {
-        color: rgb(255, 0, 0);
+        color: rgb(200, 0, 0);
       }
 
       input[type=text], input[type=number], select
@@ -80,6 +80,7 @@
         width: 5em;
         height: 1.5em;
         float: right;
+        margin-left: 0.5em;
         border-radius: 5px;
         background-color: rgba(255, 150, 0, 0.5);
         color: rgb(255, 255, 255);
@@ -169,8 +170,8 @@
             <td>{{ months[si.item.month] }}</td>
             <td>{{ si.item.name }}</td>
             <td v-bind:class=" si.item.amount > 0 ? 'numeric inText' : 'numeric outText'">{{ si.item.amount }}</td>
-            <td @click="setCurrentIndex(entry.index)">UPDATE</td>
-            <td @click="removeItem(entry.index)">DELETE</td>
+            <td><input type="button" value="UPDATE" @click="setCurrentIndex(si.index)" /></td>
+            <td><input type="button" value="DELETE" @click="removeItem(si.index)" /></td>
           </tr>
         </table>
       </div>
@@ -256,6 +257,7 @@
           removeItem: function(index) {
             this.items.splice(index, 1);
             this.setCurrentIndex(0);
+            this.sortItemOrder();
           },
           setCurrentIndex: function(val) {
             this.currentIndex = val;
