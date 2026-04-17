@@ -278,13 +278,6 @@
             this.monthItems = structuredClone(tempMonthItems);
 
             console.log(this.monthItems);
-          },
-          filterItems: function(month, isIn) {
-            if (isIn) {
-              return this.items.filter((item) => { return item.month == month && item.amount > 0; });
-            }
-
-            return this.items.filter((item) => { return item.month == month && item.amount < 0; });
           }
         }
       });
