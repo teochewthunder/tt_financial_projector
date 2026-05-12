@@ -92,15 +92,16 @@
         background-color: rgba(255, 150, 0, 1);
       }
 
-      .hidden
+      .error
       {
-        display: none;
+        color: rgb(255, 0, 0);
+        font-size: 0.8em;
+        font-weight: bold;
       }
     </style>
   </head>
 
   <body>
-
     <div id="fpApp">
       <div id="pnlFinancialProjection" class="panel">
         <table>
@@ -112,7 +113,7 @@
             <td width="20%" class="numeric">CUMULATIVE</td> 
           </tr>
 
-          <tr v-for="(monthItem, monthItemIndex) in monthItems" v-bind:key="monthItemIndex" v-bind:class="monthItemIndex == 0 ? 'hidden' : ''">
+          <tr v-for="(monthItem, monthItemIndex) in monthItems" v-bind:key="monthItemIndex" v-if="monthItemIndex > 0">
             <td>{{ monthItem.monthName }}</td>
             <td class="numeric inText">{{ monthItem.itemsInTotal }}</td>
             <td class="numeric outText">{{ monthItem.itemsOutTotal }}</td>
@@ -126,8 +127,8 @@
         <p>
           <label for="itemMonth">Month</label>
           <br />
-          <select ref="itemMonth" id="itemMOnth" v-model="items[currentIndex].month">
-            <option v-for="(month, index) in months" v-bind:key="index" v-bind:value="index">
+          <select ref="itemMonth" id="itemMonth">
+            <option v-for="(month, index) in months" v-bind:key="index" v-bind:value="index" v-bind:selected="items[currentIndex].month == index">
               {{ month }}
             </option>
           </select>
@@ -136,7 +137,7 @@
           <label for="itemName">Name</label>
           <br />
           <input ref="itemName" id="itemName" type="text" v-bind:value="items[currentIndex].name">
-          <br /> {{ errors.name }}
+          <span class="error">{{ errors.name }}</span>
         </p>
         <p>
           <label for="itemTypeIn">Type</label>
@@ -148,9 +149,9 @@
           <label for="itemAmount">Amount</label>
           <br />
           <input ref="itemAmount" id="itemAmount" type="number" v-bind:value="Math.abs(items[currentIndex].amount)">
-          <br /> {{ errors.amount }}
+          <span class="error">{{ errors.amount }}</span>
         </p>
-        <input type="button" value="NEW" @click="setCurrentIndex(0)" v-bind:class="currentIndex == 0 ? 'hidden' : ''" />
+        <input type="button" value="NEW" @click="setCurrentIndex(0)" v-if="currentIndex > 0" />
         <input type="button" v-bind:value="currentIndex == 0 ? 'ADD' : 'UPDATE'" @click="addUpdateItem" />
       </div>
       
@@ -164,9 +165,7 @@
             <td width="10%"></td>
           </tr>
 
-          <tr v-for="si in sortedItems" 
-              v-bind:key="si.index" 
-              v-if="si.index > 0">
+          <tr v-for="si in sortedItems" v-bind:key="si.index" v-if="si.index > 0">
             <td>{{ months[si.item.month] }}</td>
             <td>{{ si.item.name }}</td>
             <td v-bind:class=" si.item.amount > 0 ? 'numeric inText' : 'numeric outText'">{{ si.item.amount }}</td>
@@ -175,8 +174,8 @@
           </tr>
         </table>
       </div>
-      </div>
     </div>
+
     <script src="https://cdn.jsdelivr.net/npm/vue@2.7.16/dist/vue.js"></script>
 
     <script>
@@ -232,7 +231,6 @@
             let monthValue = parseInt(this.$refs.itemMonth.value);
             let errors = 0;
 
-            //validations
             if (nameValue == "") { this.errors.name = "Required"; errors++; }
             if (amountValue <= 0 || isNaN(amountValue)) { this.errors.amount = "Must be positive"; errors++; }
             if (errors > 0) return;
@@ -276,8 +274,6 @@
             }
 
             this.monthItems = structuredClone(tempMonthItems);
-
-            console.log(this.monthItems);
           }
         }
       });
